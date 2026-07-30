@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Investimentos Inteligente</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #f8fafc; color: #0f172a; padding: 40px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        header { margin-bottom: 40px; text-align: center; }
+        header h1 { font-size: 2.5rem; color: #1e3a8a; margin-bottom: 10px; }
+        header p { color: #64748b; font-size: 1.1rem; }
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .badge-mercado { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 20px; }
+        .b3 { background-color: #dbeafe; color: #1e40af; }
+        .usa { background-color: #fef08a; color: #854d0e; }
+        .crypto { background-color: #dcfce7; color: #166534; }
+        .ticker-name { font-size: 1.25rem; font-weight: 700; color: #334155; }
+        .preco-grande { font-size: 2.25rem; font-weight: 800; color: #0f172a; margin: 10px 0; }
+        .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 0.8rem; color: #94a3b8; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background-color: #10b981; }
+        .btn-atualizar { display: block; width: 200px; margin: 0 auto; padding: 12px 24px; background-color: #1e40af; color: #ffffff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Painel de Produtos Financeiros</h1>
+            <p>Cotações inteligentes protegidas por Cache Local Ativo</p>
+        </header>
+        <div class="grid-produtos">
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Petrobras (PETR4)</span><span class="badge-mercado b3">B3 (Brasil)</span></div>
+                <div class="preco-grande" id="preco-PETR4.SA">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-PETR4.SA">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Apple Inc. (AAPL)</span><span class="badge-mercado usa">NASDAQ (EUA)</span></div>
+                <div class="preco-grande" id="preco-AAPL">US$ --,--</div>
+                <div class="footer-card"><span id="fonte-AAPL">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Bitcoin (BTC)</span><span class="badge-mercado crypto">Cripto</span></div>
+                <div class="preco-grande" id="preco-BTC-USD">US$ --,--</div>
+                <div class="footer-card"><span id="fonte-BTC-USD">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+        </div>
+        <button class="btn-atualizar" onclick="atualizarTodosOsProdutos()">Atualizar Agora</button>
+    </div>
+    <script>
+        async function buscarAtivo(ticker, elementoPreco, elementoFonte, prefixoMoeda) {
+            try {
+                const resposta = await fetch(`/api/cotacao/${ticker}`);
+                if (!resposta.ok) throw new Error();
+                const dados = await resposta.json();
+                document.getElementById(elementoPreco).innerText = `${prefixoMoeda} ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                if (dados.fonte === "Cache Interno Protegido") {
+                    document.getElementById(elementoFonte).innerText = `🔄 Cache (${dados.tempo_restante_cache_segundos}s)`;
+                    document.getElementById(elementoFonte).style.color = "#f59e0b";
+                } else {
+                    document.getElementById(elementoFonte).innerText = `⚡ API Atualizada`;
+                    document.getElementById(elementoFonte).style.color = "#10b981";
+                }
+            } catch (erro) {
+                document.getElementById(elementoPreco).innerText = "Erro";
+                document.getElementById(elementoFonte).innerText = "Indisponível";
+                document.getElementById(elementoFonte).style.color = "#ef4444";
+            }
+        }
+        function atualizarTodosOsProdutos() {
+            buscarAtivo("PETR4.SA", "preco-PETR4.SA", "fonte-PETR4.SA", "R$");
+            buscarAtivo("AAPL", "preco-AAPL", "fonte-AAPL", "US$");
+            buscarAtivo("BTC-USD", "preco-BTC-USD", "fonte-BTC-USD", "US$");
+        }
+        atualizarTodosOsProdutos();
+        setInterval(atualizarTodosOsProdutos, 30000);
+    </script>
+</body>
+</html>
