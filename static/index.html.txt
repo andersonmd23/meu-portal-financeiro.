@@ -57,7 +57,7 @@
             try {
                 const resposta = await fetch(`/api/cotacao/${ticker}`);
                 if (!resposta.ok) throw new Error();
-                const dados = await resposta.json();
+                const dados = await response = await resposta.json();
                 
                 document.getElementById(elementoPreco).innerText = `R$ ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                 
@@ -87,4 +87,5 @@
     </script>
 </body>
 </html>
+
 
