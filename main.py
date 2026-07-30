@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 cache_dados = {}
-CACHE_EXPIRATION_SECONDS = 900  # Proteção de 15 minutos
+CACHE_EXPIRATION_SECONDS = 900
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -38,15 +38,18 @@ def consultar_provedor_brapi(ticker: str):
             }
             
     try:
-        # ENDPOINT OFICIAL ATUALIZADO V2 CONFORME A DOCUMENTAÇÃO DA BRAPI
-        url = f"https://brapi.dev/api/v2/stocks/quote?symbols={ticker}"
+        url = f"https://brapi.dev{ticker}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as response:
             dados_resposta = json.loads(response.read().decode())
             
-        # A brapi envelopa os dados dentro da lista 'results'
-        dados_ativo = dados_resposta["results"][0]
+        # AQUI ESTAVA O ERRO: Agora acessamos a lista 'results' e pegamos o primeiro item [0]
+        lista_resultados = dados_resposta["results"]
+        if not lista_resultados:
+            raise ValueError()
+            
+        dados_ativo = lista_resultados[0]
         preco_atual = dados_ativo["regularMarketPrice"]
         
         cache_dados[ticker] = {
@@ -78,5 +81,6 @@ def carregar_site_principal():
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 
 
