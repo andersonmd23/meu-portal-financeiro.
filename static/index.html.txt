@@ -34,8 +34,8 @@
         <div class="grid-produtos">
             <div class="card">
                 <div class="card-header"><span class="ticker-name">Petrobras (PETR4)</span><span class="badge-mercado b3">B3 (Brasil)</span></div>
-                <div class="preco-grande" id="preco-PETR4.SA">R$ --,--</div>
-                <div class="footer-card"><span id="fonte-PETR4.SA">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+                <div class="preco-grande" id="preco-PETR4">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-PETR4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
             </div>
             <div class="card">
                 <div class="card-header"><span class="ticker-name">Apple Inc. (AAPL)</span><span class="badge-mercado usa">NASDAQ (EUA)</span></div>
@@ -44,8 +44,8 @@
             </div>
             <div class="card">
                 <div class="card-header"><span class="ticker-name">Bitcoin (BTC)</span><span class="badge-mercado crypto">Cripto</span></div>
-                <div class="preco-grande" id="preco-BTC-USD">US$ --,--</div>
-                <div class="footer-card"><span id="fonte-BTC-USD">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+                <div class="preco-grande" id="preco-BTC">US$ --,--</div>
+                <div class="footer-card"><span id="fonte-BTC">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
             </div>
         </div>
         <button class="btn-atualizar" onclick="atualizarTodosOsProdutos()">Atualizar Agora</button>
@@ -56,7 +56,10 @@
                 const resposta = await fetch(`/api/cotacao/${ticker}`);
                 if (!resposta.ok) throw new Error();
                 const dados = await resposta.json();
+                
+                // Formata o número para exibir como dinheiro correto na tela
                 document.getElementById(elementoPreco).innerText = `${prefixoMoeda} ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                
                 if (dados.fonte === "Cache Interno Protegido") {
                     document.getElementById(elementoFonte).innerText = `🔄 Cache (${dados.tempo_restante_cache_segundos}s)`;
                     document.getElementById(elementoFonte).style.color = "#f59e0b";
@@ -70,13 +73,16 @@
                 document.getElementById(elementoFonte).style.color = "#ef4444";
             }
         }
+        
         function atualizarTodosOsProdutos() {
-            buscarAtivo("PETR4.SA", "preco-PETR4.SA", "fonte-PETR4.SA", "R$");
+            // Usa o padrão de tickers simplificado da brapi
+            buscarAtivo("PETR4", "preco-PETR4", "fonte-PETR4", "R$");
             buscarAtivo("AAPL", "preco-AAPL", "fonte-AAPL", "US$");
-            buscarAtivo("BTC-USD", "preco-BTC-USD", "fonte-BTC-USD", "US$");
+            buscarAtivo("BTC", "preco-BTC", "fonte-BTC", "US$");
         }
+        
         atualizarTodosOsProdutos();
-        setInterval(atualizarTodosOsProdutos, 30000);
+        setInterval(atualizarTodosOsProdutos, 30000); // Atualiza a cada 30 segundos
     </script>
 </body>
 </html>
