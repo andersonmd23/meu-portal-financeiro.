@@ -1,14 +1,13 @@
-
-
 import time
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-import yfinance as yf
+import urllib.request
+import json
 
-app = FastAPI(title="Infraestrutura Financeira Unificada")
+app = FastAPI(title="Infraestrutura Financeira Blindada")
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,7 +23,7 @@ CACHE_EXPIRATION_SECONDS = 900  # 15 minutos
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-def consultar_provedor_financeiro(ticker: str):
+def consultar_provedor_brapi(ticker: str):
     tempo_atual = time.time()
     
     if ticker in cache_dados:
@@ -39,19 +38,15 @@ def consultar_provedor_financeiro(ticker: str):
             }
             
     try:
-        # Método alternativo e muito mais estável para buscar preços de mercado
-        ativo = yf.Ticker(ticker)
-        historico_hoje = ativo.history(period="1d")
+        # Conecta diretamente com a API oficial e gratuita da brapi
+        url = f"https://brapi.dev{ticker}"
         
-        if historico_hoje.empty:
-            raise ValueError()
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=10) as response:
+            dados_resposta = json.loads(response.read().decode())
             
-        # Pega o último preço disponível na tabela do dia
-        preco_atual = historico_hoje['Close'].iloc[-1]
+        preco_atual = dados_resposta["results"][0]["regularMarketPrice"]
         
-        if preco_atual is None or preco_atual <= 0:
-            raise ValueError()
-            
         cache_dados[ticker] = {
             "preco": round(preco_atual, 2),
             "updated_at": tempo_atual
@@ -65,19 +60,22 @@ def consultar_provedor_financeiro(ticker: str):
         }
         
     except Exception:
-        raise HTTPException(status_code=404, detail=f"Ativo {ticker} invalido ou indisponivel.")
+        raise HTTPException(status_code=404, detail=f"Erro ao processar cotação para {ticker}.")
 
 @app.get("/api/cotacao/{ticker}")
 def obter_cotacao(ticker: str):
-    return consultar_provedor_financeiro(ticker.upper().strip())
+    # Trata o formato: brapi não usa ".SA" e cripto/internacional usa formatos limpos
+    ticker_limpo = ticker.upper().strip().replace(".SA", "")
+    return consultar_provedor_brapi(ticker_limpo)
 
 @app.get("/")
 def carregar_site_principal():
     caminho_html = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(caminho_html):
         return FileResponse(caminho_html)
-    raise HTTPException(status_code=404, detail="Arquivo index.html nao encontrado na pasta static.")
+    raise HTTPException(status_code=404, detail="Arquivo index.html nao encontrado.")
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 
