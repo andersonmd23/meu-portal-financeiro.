@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 cache_dados = {}
-CACHE_EXPIRATION_SECONDS = 900  # 15 minutos
+CACHE_EXPIRATION_SECONDS = 900  # Proteção de 15 minutos
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -38,14 +38,14 @@ def consultar_provedor_brapi(ticker: str):
             }
             
     try:
-        # ENDPOINT CORRIGIDO CONFORME A DOCUMENTAÇÃO V2 DA BRAPI
-        url = f"https://brapi.dev{ticker}"
+        # ENDPOINT OFICIAL ATUALIZADO V2 CONFORME A DOCUMENTAÇÃO DA BRAPI
+        url = f"https://brapi.dev/api/v2/stocks/quote?symbols={ticker}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as response:
             dados_resposta = json.loads(response.read().decode())
             
-        # A brapi responde os dados encapsulados dentro de 'results' na primeira posição [0]
+        # A brapi envelopa os dados dentro da lista 'results'
         dados_ativo = dados_resposta["results"][0]
         preco_atual = dados_ativo["regularMarketPrice"]
         
@@ -61,11 +61,11 @@ def consultar_provedor_brapi(ticker: str):
             "tempo_restante_cache_segundos": CACHE_EXPIRATION_SECONDS
         }
         
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=404, detail=f"Erro ao processar cotacao para {ticker}.")
 
 @app.get("/api/cotacao/{ticker}")
-def obtener_cotacao(ticker: str):
+def obter_cotacao(ticker: str):
     ticker_limpo = ticker.upper().strip().replace(".SA", "")
     return consultar_provedor_brapi(ticker_limpo)
 
@@ -78,4 +78,5 @@ def carregar_site_principal():
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 
