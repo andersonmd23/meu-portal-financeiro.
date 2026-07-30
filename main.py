@@ -1,87 +1,93 @@
-import time
-import os
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-import urllib.request
-import json
 
-app = FastAPI(title="Infraestrutura Financeira Blindada")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-cache_dados = {}
-CACHE_EXPIRATION_SECONDS = 900  # 15 minutos
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-
-def consultar_provedor_brapi(ticker: str):
-    tempo_atual = time.time()
-    
-    if ticker in cache_dados:
-        dados_salvos = cache_dados[ticker]
-        idade_do_cache = tempo_atual - dados_salvos["updated_at"]
-        if idade_do_cache < CACHE_EXPIRATION_SECONDS:
-            return {
-                "ticker": ticker,
-                "preco": dados_salvos["preco"],
-                "fonte": "Cache Interno Protegido",
-                "tempo_restante_cache_segundos": int(CACHE_EXPIRATION_SECONDS - idade_do_cache)
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Investimentos Inteligente</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #f8fafc; color: #0f172a; padding: 40px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        header { margin-bottom: 40px; text-align: center; }
+        header h1 { font-size: 2.5rem; color: #1e3a8a; margin-bottom: 10px; }
+        header p { color: #64748b; font-size: 1.1rem; }
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .badge-mercado { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 20px; background-color: #dbeafe; color: #1e40af; }
+        .ticker-name { font-size: 1.25rem; font-weight: 700; color: #334155; }
+        .preco-grande { font-size: 2.25rem; font-weight: 800; color: #0f172a; margin: 10px 0; }
+        .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 0.8rem; color: #94a3b8; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background-color: #10b981; }
+        .btn-atualizar { display: block; width: 200px; margin: 0 auto; padding: 12px 24px; background-color: #1e40af; color: #ffffff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Painel de Produtos Financeiros</h1>
+            <p>Cotações inteligentes protegidas por Cache Local Ativo</p>
+        </header>
+        <div class="grid-produtos">
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Petrobras (PETR4)</span><span class="badge-mercado">B3</span></div>
+                <div class="preco-grande" id="preco-PETR4">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-PETR4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Vale (VALE3)</span><span class="badge-mercado">B3</span></div>
+                <div class="preco-grande" id="preco-VALE3">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-VALE3">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Magaz. Luiza (MGLU3)</span><span class="badge-mercado">B3</span></div>
+                <div class="preco-grande" id="preco-MGLU3">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-MGLU3">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="ticker-name">Itaú (ITUB4)</span><span class="badge-mercado">B3</span></div>
+                <div class="preco-grande" id="preco-ITUB4">R$ --,--</div>
+                <div class="footer-card"><span id="fonte-ITUB4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
+            </div>
+        </div>
+        <button class="btn-atualizar" onclick="atualizarTodosOsProdutos()">Atualizar Agora</button>
+    </div>
+    <script>
+        async function buscarAtivo(ticker, elementoPreco, elementoFonte) {
+            try {
+                const resposta = await fetch(`/api/cotacao/${ticker}`);
+                if (!resposta.ok) throw new Error();
+                const dados = await resposta.json();
+                
+                document.getElementById(elementoPreco).innerText = `R$ ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                
+                if (dados.fonte === "Cache Interno Protegido") {
+                    document.getElementById(elementoFonte).innerText = `🔄 Cache (${dados.tempo_restante_cache_segundos}s)`;
+                    document.getElementById(elementoFonte).style.color = "#f59e0b";
+                } else {
+                    document.getElementById(elementoFonte).innerText = `⚡ API Atualizada`;
+                    document.getElementById(elementoFonte).style.color = "#10b981";
+                }
+            } catch (erro) {
+                document.getElementById(elementoPreco).innerText = "Erro";
+                document.getElementById(elementoFonte).innerText = "Indisponível";
+                document.getElementById(elementoFonte).style.color = "#ef4444";
             }
-            
-    try:
-        url = f"https://brapi.dev{ticker}"
-        
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            dados_resposta = json.loads(response.read().decode())
-            
-        # CORREÇÃO CRÍTICA: Captura explicitamente o primeiro item da lista de resultados [0]
-        lista_resultados = dados_resposta.get("results", [])
-        if not lista_resultados:
-            raise ValueError()
-            
-        dados_ativo = lista_resultados[0]
-        preco_atual = dados_ativo["regularMarketPrice"]
-        
-        cache_dados[ticker] = {
-            "preco": round(preco_atual, 2),
-            "updated_at": tempo_atual
         }
         
-        return {
-            "ticker": ticker,
-            "preco": round(preco_atual, 2),
-            "fonte": "Fonte Externa (Nova Requisicao)",
-            "tempo_restante_cache_segundos": CACHE_EXPIRATION_SECONDS
+        function atualizarTodosOsProdutos() {
+            buscarAtivo("PETR4", "preco-PETR4", "fonte-PETR4");
+            buscarAtivo("VALE3", "preco-VALE3", "fonte-VALE3");
+            buscarAtivo("MGLU3", "preco-MGLU3", "fonte-MGLU3");
+            buscarAtivo("ITUB4", "preco-ITUB4", "fonte-ITUB4");
         }
         
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Erro ao processar cotacao para {ticker}.")
-
-@app.get("/api/cotacao/{ticker}")
-def obter_cotacao(ticker: str):
-    ticker_limpo = ticker.upper().strip().replace(".SA", "")
-    return consultar_provedor_brapi(ticker_limpo)
-
-@app.get("/")
-def carregar_site_principal():
-    caminho_html = os.path.join(STATIC_DIR, "index.html")
-    if os.path.exists(caminho_html):
-        return FileResponse(caminho_html)
-    raise HTTPException(status_code=404, detail="Arquivo index.html nao encontrado na pasta static.")
-
-if os.path.exists(STATIC_DIR):
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
+        atualizarTodosOsProdutos();
+        setInterval(atualizarTodosOsProdutos, 30000);
+    </script>
+</body>
+</html>
 
 
 
