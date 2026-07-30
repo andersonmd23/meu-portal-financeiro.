@@ -45,7 +45,7 @@
                 <div class="footer-card"><span id="fonte-MGLU3">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
             </div>
             <div class="card">
-                <div class="card-header"><span class="ticker-name">Itaú Unibanco (ITUB4)</span><span class="badge-mercado">B3</span></div>
+                <div class="card-header"><span class="ticker-name">Itaú (ITUB4)</span><span class="badge-mercado">B3</span></div>
                 <div class="preco-grande" id="preco-ITUB4">R$ --,--</div>
                 <div class="footer-card"><span id="fonte-ITUB4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
             </div>
@@ -57,7 +57,7 @@
             try {
                 const resposta = await fetch(`/api/cotacao/${ticker}`);
                 if (!resposta.ok) throw new Error();
-                const dados = await response = await resposta.json();
+                const dados = await resposta.json();
                 
                 document.getElementById(elementoPreco).innerText = `R$ ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                 
