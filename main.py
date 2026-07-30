@@ -38,14 +38,16 @@ def consultar_provedor_brapi(ticker: str):
             }
             
     try:
-        # Conecta diretamente com a API oficial e gratuita da brapi
+        # ENDPOINT CORRIGIDO CONFORME A DOCUMENTAÇÃO V2 DA BRAPI
         url = f"https://brapi.dev{ticker}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as response:
             dados_resposta = json.loads(response.read().decode())
             
-        preco_atual = dados_resposta["results"][0]["regularMarketPrice"]
+        # A brapi responde os dados encapsulados dentro de 'results' na primeira posição [0]
+        dados_ativo = dados_resposta["results"][0]
+        preco_atual = dados_ativo["regularMarketPrice"]
         
         cache_dados[ticker] = {
             "preco": round(preco_atual, 2),
@@ -59,12 +61,11 @@ def consultar_provedor_brapi(ticker: str):
             "tempo_restante_cache_segundos": CACHE_EXPIRATION_SECONDS
         }
         
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Erro ao processar cotação para {ticker}.")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Erro ao processar cotacao para {ticker}.")
 
 @app.get("/api/cotacao/{ticker}")
-def obter_cotacao(ticker: str):
-    # Trata o formato: brapi não usa ".SA" e cripto/internacional usa formatos limpos
+def obtener_cotacao(ticker: str):
     ticker_limpo = ticker.upper().strip().replace(".SA", "")
     return consultar_provedor_brapi(ticker_limpo)
 
@@ -73,9 +74,7 @@ def carregar_site_principal():
     caminho_html = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(caminho_html):
         return FileResponse(caminho_html)
-    raise HTTPException(status_code=404, detail="Arquivo index.html nao encontrado.")
+    raise HTTPException(status_code=404, detail="Arquivo index.html nao encontrado na pasta static.")
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-
