@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 cache_dados = {}
-CACHE_EXPIRATION_SECONDS = 900
+CACHE_EXPIRATION_SECONDS = 900  # 15 minutos
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -38,13 +38,14 @@ def consultar_provedor_brapi(ticker: str):
             }
             
     try:
-        url = f"https://brapi.dev{ticker}"
+        # Consulta o endpoint v2 oficial estruturado da brapi
+        url = f"https://brapi.dev/api/v2/stocks/quote?symbols={ticker}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as response:
             dados_resposta = json.loads(response.read().decode())
             
-        # AQUI ESTAVA O ERRO: Agora acessamos a lista 'results' e pegamos o primeiro item [0]
+        # CORREÇÃO CRÍTICA: Acessa a primeira posição [0] da lista 'results'
         lista_resultados = dados_resposta["results"]
         if not lista_resultados:
             raise ValueError()
@@ -81,6 +82,7 @@ def carregar_site_principal():
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 
 
 
