@@ -38,15 +38,14 @@ def consultar_provedor_brapi(ticker: str):
             }
             
     try:
-        # Consulta o endpoint v2 oficial estruturado da brapi
-        url = f"https://brapi.dev/api/v2/stocks/quote?symbols={ticker}"
+        url = f"https://brapi.dev{ticker}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as response:
             dados_resposta = json.loads(response.read().decode())
             
-        # CORREÇÃO CRÍTICA: Acessa a primeira posição [0] da lista 'results'
-        lista_resultados = dados_resposta["results"]
+        # CORREÇÃO CRÍTICA: Captura explicitamente o primeiro item da lista de resultados [0]
+        lista_resultados = dados_resposta.get("results", [])
         if not lista_resultados:
             raise ValueError()
             
@@ -82,6 +81,7 @@ def carregar_site_principal():
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 
 
 
