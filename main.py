@@ -78,3 +78,4 @@ def carregar_site_principal():
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
