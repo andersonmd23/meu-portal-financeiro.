@@ -3,90 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Investimentos Inteligente</title>
+    <title>Portal Financeiro Avançado - Terminal de Mercados</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #f8fafc; color: #0f172a; padding: 40px 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        header { margin-bottom: 40px; text-align: center; }
-        header h1 { font-size: 2.5rem; color: #1e40af; margin-bottom: 10px; }
-        header p { color: #64748b; font-size: 1.1rem; }
-        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .badge-mercado { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 20px; background-color: #dbeafe; color: #1e40af; }
-        .ticker-name { font-size: 1.25rem; font-weight: 700; color: #334155; }
-        .preco-grande { font-size: 2.25rem; font-weight: 800; color: #0f172a; margin: 10px 0; }
-        .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #f1f5f9; font-size: 0.8rem; color: #94a3b8; }
-        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background-color: #10b981; }
-        .btn-atualizar { display: block; width: 200px; margin: 0 auto; padding: 12px 24px; background-color: #1e40af; color: #ffffff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        /* CSS OTIMIZADO E RESPONSIVO - LOOP ENGINEERED */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: #f1f5f9; color: #0f172a; overflow-x: hidden; }
+        
+        /* Ticker Tape Superior */
+        .ticker-tape-container { background: #1e293b; color: #ffffff; padding: 5px 0; min-height: 44px; width: 100%; border-bottom: 2px solid #f59e0b; }
+        
+        /* Layout Principal */
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        header { background: #ffffff; padding: 20px 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #1e40af; }
+        header h1 { color: #1e40af; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+        header h1 span { color: #f59e0b; }
+        
+        .main-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        
+        .section-title { font-size: 1.15rem; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        .widget-box { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        /* Painel de Monitoramento B3 */
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 5px; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .badge { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .ticker-name { font-size: 0.95rem; font-weight: 700; color: #475569; }
+        .preco-grande { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 8px 0; letter-spacing: -0.5px; }
+        .footer-card { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px; margin-top: 10px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 4px; }
+        
+        /* Containers de Gráficos e Componentes Estilo Investing */
+        .chart-container { height: 500px; width: 100%; border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .sidebar { display: flex; flex-direction: column; gap: 5px; }
+        
+        .btn-refresh { padding: 10px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(30,64,175,0.2); }
+        .btn-refresh:hover { background: #1d4ed8; }
+
+        /* REGRAS DE RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS */
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .chart-container { height: 400px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Painel de Produtos Financeiros</h1>
-            <p>Cotações inteligentes protegidas por Cache Local Ativo</p>
-        </header>
-        <div class="grid-produtos">
-            <div class="card">
-                <div class="card-header"><span class="ticker-name">Petrobras (PETR4)</span><span class="badge-mercado">B3</span></div>
-                <div class="preco-grande" id="preco-PETR4">R$ --,--</div>
-                <div class="footer-card"><span id="fonte-PETR4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><span class="ticker-name">Vale (VALE3)</span><span class="badge-mercado">B3</span></div>
-                <div class="preco-grande" id="preco-VALE3">R$ --,--</div>
-                <div class="footer-card"><span id="fonte-VALE3">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><span class="ticker-name">Magaz. Luiza (MGLU3)</span><span class="badge-mercado">B3</span></div>
-                <div class="preco-grande" id="preco-MGLU3">R$ --,--</div>
-                <div class="footer-card"><span id="fonte-MGLU3">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><span class="ticker-name">Itaú (ITUB4)</span><span class="badge-mercado">B3</span></div>
-                <div class="preco-grande" id="preco-ITUB4">R$ --,--</div>
-                <div class="footer-card"><span id="fonte-ITUB4">Carregando...</span><span><span class="status-dot"></span>Monitorado</span></div>
-            </div>
-        </div>
-        <button class="btn-atualizar" onclick="atualizarTodosOsProdutos()">Atualizar Agora</button>
-    </div>
-    <script>
-        async function buscarAtivo(ticker, elementoPreco, elementoFonte) {
-            try {
-                const resposta = await fetch(`/api/cotacao/${ticker}`);
-                if (!resposta.ok) throw new Error();
-                const dados = await resposta.json();
-                
-                document.getElementById(elementoPreco).innerText = `R$ ${dados.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-                
-                if (dados.fonte === "Cache Interno Protegido") {
-                    document.getElementById(elementoFonte).innerText = `🔄 Cache (${dados.tempo_restante_cache_segundos}s)`;
-                    document.getElementById(elementoFonte).style.color = "#f59e0b";
-                } else {
-                    document.getElementById(elementoFonte).innerText = `⚡ API Atualizada`;
-                    document.getElementById(elementoFonte).style.color = "#10b981";
-                }
-            } catch (erro) {
-                document.getElementById(elementoPreco).innerText = "Erro";
-                document.getElementById(elementoFonte).innerText = "Indisponível";
-                document.getElementById(elementoFonte).style.color = "#ef4444";
+
+    <!-- 1. TOP TICKER TAPE (BARRA DE ROLAGEM GLOBAL) -->
+    <div class="ticker-tape-container">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://tradingview.com" async>
+            {
+                "symbols": [
+                    {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+                    {"proName": "FX_IDC:USDBRL", "title": "Dólar / Real"},
+                    {"proName": "FX_IDC:EURBRL", "title": "Euro / Real"},
+                    {"proName": "BMFBOVESPA:IBOV", "title": "Ibovespa"},
+                    {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"}
+                ],
+                "showSymbolLogo": true,
+                "colorTheme": "dark",
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "locale": "br"
             }
-        }
+            </script>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- CABEÇALHO DO PORTAL -->
+        <header>
+            <h1>CONECTA<span>INVEST</span> TERMINAL</h1>
+            <button class="btn-refresh" onclick="atualizarTodosOsProdutos()">Atualizar Painel</button>
+        </header>
+
+        <div class="main-layout">
+            <!-- COLUNA ESQUERDA: COTAÇÕES LOCAIS E GRÁFICO INTERATIVO -->
+            <div>
+                <!-- Módulo de Ativos Locais com Cache Blindado -->
+                <div class="widget-box">
+                    <div class="section-title">🖥️ Monitoramento de Ativos Locais (B3)</div>
+                    <div class="grid-produtos">
+                        <div class="card">
+                            <div class="card-header"><span class="ticker-name">Petrobras (PETR4)</span><span class="badge">B3</span></div>
+                            <div class="preco-grande" id="preco-PETR4">R$ --,--</div>
+                            <div class="footer-card"><span id="fonte-PETR4">Carregando...</span><span><span class="status-dot"></span>Dinamico</span></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><span class="ticker-name">Vale (VALE3)</span><span class="badge">B3</span></div>
+                            <div class="preco-grande" id="preco-VALE3">R$ --,--</div>
+                            <div class="footer-card"><span id="fonte-VALE3">Carregando...</span><span><span class="status-dot"></span>Dinamico</span></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><span class="ticker-name">Magaz. Luiza (MGLU3)</span><span class="badge">B3</span></div>
+                            <div class="preco-grande" id="preco-MGLU3">R$ --,--</div>
+                            <div class="footer-card"><span id="fonte-MGLU3">Carregando...</span><span><span class="status-dot"></span>Dinamico</span></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><span class="ticker-name">Itaú (ITUB4)</span><span class="badge">B3</span></div>
+                            <div class="preco-grande" id="preco-ITUB4">R$ --,--</div>
+                            <div class="footer-card"><span id="fonte-ITUB4">Carregando...</span><span><span class="status-dot"></span>Dinamico</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. GRÁFICO PROFISSIONAL AVANÇADO (ESTILO TRADINGVIEW/INVESTING) -->
+                <div class="widget-box">
+                    <div class="section-title">📈 Análise Avançada e Gráfico Técnico Interativo</div>
+                    <div class="chart-container">
+                        <div id="tradingview_advanced_chart_engine"></div>
+                        <script type="text/javascript" src="https://tradingview.com"></script>
+                        <script type="text/javascript">
+                        // Inicialização sequencial segura pós-carregamento do DOM
+                        window.addEventListener('DOMContentLoaded', function() {
+                            new TradingView.widget({
+                                "width": "100%",
+                                "height": "100%",
+                                "symbol": "BMFBOVESPA:IBOV",
+                                "interval": "D",
+                                "timezone": "America/Sao_Paulo",
+                                "theme": "light",
+                                "style": "1",
+                                "locale": "br",
+                                "enable_publishing": false,
+                                "allow_symbol_change": true,
+                                "container_id": "tradingview_advanced_chart_engine"
+                            });
+                        });
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: COMPONENTES MACRO E INFORMAÇÕES DE MERCADO -->
+            <div class="sidebar">
+                <!-- 3. CÂMBIO INTERNACIONAL E COMMODITIES -->
+                <div class="widget-box">
+                    <div class="section-title">💵 Câmbio & Commodities Críticas</div>
+                    <div class="tradingview-widget-container">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript" src="https://tradingview.com" async>
+                        {
+                            "colorTheme": "light",
+                            "dateRange": "12M",
+                            "showChart": false,
+                            "locale": "br",
+                            "width": "100%",
+                            "height": "240",
+                            "tabs": [
+                                {
+                                    "title": "Taxas de Câmbio",
+                                    "symbols": [
+                                        {"s": "FX_IDC:USDBRL", "title": "Dólar Comercial"},
+
         
-        function atualizarTodosOsProdutos() {
-            buscarAtivo("PETR4", "preco-PETR4", "fonte-PETR4");
-            buscarAtivo("VALE3", "preco-VALE3", "fonte-VALE3");
-            buscarAtivo("MGLU3", "preco-MGLU3", "fonte-MGLU3");
-            buscarAtivo("ITUB4", "preco-ITUB4", "fonte-ITUB4");
-        }
-        
-        atualizarTodosOsProdutos();
-        setInterval(atualizarTodosOsProdutos, 10000); // Atualiza o painel visual a cada 10 segundos
-    </script>
-</body>
-</html>
 
 
 
