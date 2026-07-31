@@ -5,26 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Financeiro Avançado - Terminal de Mercados</title>
     <style>
-        /* CSS OTIMIZADO E RESPONSIVO - LOOP ENGINEERED */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background-color: #f1f5f9; color: #0f172a; overflow-x: hidden; }
-        
-        /* Ticker Tape Superior */
         .ticker-tape-container { background: #1e293b; color: #ffffff; padding: 5px 0; min-height: 44px; width: 100%; border-bottom: 2px solid #f59e0b; }
-        
-        /* Layout Principal */
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        
         header { background: #ffffff; padding: 20px 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #1e40af; }
         header h1 { color: #1e40af; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
         header h1 span { color: #f59e0b; }
-        
         .main-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
-        
         .section-title { font-size: 1.15rem; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
         .widget-box { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        
-        /* Painel de Monitoramento B3 */
         .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 5px; }
         .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); transition: transform 0.2s; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -34,24 +24,15 @@
         .preco-grande { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 8px 0; letter-spacing: -0.5px; }
         .footer-card { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px; margin-top: 10px; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 4px; }
-        
-        /* Containers de Gráficos e Componentes Estilo Investing */
         .chart-container { height: 500px; width: 100%; border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; }
         .sidebar { display: flex; flex-direction: column; gap: 5px; }
-        
         .btn-refresh { padding: 10px 20px; background: #1e40af; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(30,64,175,0.2); }
         .btn-refresh:hover { background: #1d4ed8; }
-
-        /* REGRAS DE RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS */
-        @media (max-width: 1024px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .chart-container { height: 400px; }
-        }
+        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } .chart-container { height: 400px; } }
     </style>
 </head>
 <body>
 
-    <!-- 1. TOP TICKER TAPE (BARRA DE ROLAGEM GLOBAL) -->
     <div class="ticker-tape-container">
         <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
@@ -75,16 +56,13 @@
     </div>
 
     <div class="container">
-        <!-- CABEÇALHO DO PORTAL -->
         <header>
             <h1>CONECTA<span>INVEST</span> TERMINAL</h1>
             <button class="btn-refresh" onclick="atualizarTodosOsProdutos()">Atualizar Painel</button>
         </header>
 
         <div class="main-layout">
-            <!-- COLUNA ESQUERDA: COTAÇÕES LOCAIS E GRÁFICO INTERATIVO -->
             <div>
-                <!-- Módulo de Ativos Locais com Cache Blindado -->
                 <div class="widget-box">
                     <div class="section-title">🖥️ Monitoramento de Ativos Locais (B3)</div>
                     <div class="grid-produtos">
@@ -111,14 +89,12 @@
                     </div>
                 </div>
 
-                <!-- 2. GRÁFICO PROFISSIONAL AVANÇADO (ESTILO TRADINGVIEW/INVESTING) -->
                 <div class="widget-box">
                     <div class="section-title">📈 Análise Avançada e Gráfico Técnico Interativo</div>
                     <div class="chart-container">
                         <div id="tradingview_advanced_chart_engine"></div>
                         <script type="text/javascript" src="https://tradingview.com"></script>
                         <script type="text/javascript">
-                        // Inicialização sequencial segura pós-carregamento do DOM
                         window.addEventListener('DOMContentLoaded', function() {
                             new TradingView.widget({
                                 "width": "100%",
@@ -139,9 +115,7 @@
                 </div>
             </div>
 
-            <!-- COLUNA DIREITA: COMPONENTES MACRO E INFORMAÇÕES DE MERCADO -->
             <div class="sidebar">
-                <!-- 3. CÂMBIO INTERNACIONAL E COMMODITIES -->
                 <div class="widget-box">
                     <div class="section-title">💵 Câmbio & Commodities Críticas</div>
                     <div class="tradingview-widget-container">
@@ -159,6 +133,24 @@
                                     "title": "Taxas de Câmbio",
                                     "symbols": [
                                         {"s": "FX_IDC:USDBRL", "title": "Dólar Comercial"},
+                                        {"s": "FX_IDC:EURBRL", "title": "Euro Comercial"},
+                                        {"s": "TVC:GOLD", "title": "Ouro (Onça T.)"},
+                                        {"s": "TVC:UKOIL", "title": "Petróleo Brent"}
+                                    ]
+                                }
+                            ]
+                        }
+                        </script>
+                    </div>
+                </div>
+
+                <div class="widget-box">
+                    <div class="section-title">📅 Calendário Econômico de Impacto</div>
+                    <div class="tradingview-widget-container">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript" src="https://tradingview.com" async>
+                        {
+                            "colorTheme": "light",
 
         
 
